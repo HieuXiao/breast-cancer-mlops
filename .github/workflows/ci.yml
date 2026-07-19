@@ -31,7 +31,7 @@ jobs:
 
       - name: Run unit tests
         run: |
-          pytest
+          pytest --cov=src --cov=app --cov-report=term-missing --cov-report=xml
 
       - name: Run serialization test
         run: |
