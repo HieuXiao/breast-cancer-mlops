@@ -95,6 +95,54 @@ main
 
 ---
 
+## Model Deployment
+
+
+The trained machine learning pipeline is deployed as a REST API using FastAPI.
+
+
+Architecture:
+
+```
+Client
+
+↓
+
+FastAPI
+
+↓
+
+Serialized ML Pipeline
+
+↓
+
+StandardScaler + LogisticRegression
+
+↓
+
+Prediction
+```
+
+API endpoints:
+```
+GET /health
+
+GET /model-info
+
+POST /predict
+```
+
+Run service:
+
+```
+uvicorn app.main:app --reload
+```
+
+Swagger documentation:
+```
+http://127.0.0.1:8000/docs
+```
+
 ## License
 
 Educational project for learning MLOps.
