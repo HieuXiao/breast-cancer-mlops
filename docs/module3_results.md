@@ -275,7 +275,53 @@ Training-serving skew
 
 ---
 
-# 6. Module 3 Completion Status
+# 6. Training-serving Skew Experiment
+
+## Objective
+
+Demonstrate the impact of deploying only the estimator without preprocessing.
+
+The original training pipeline:
+
+```
+Raw features
+
+    ↓
+
+StandardScaler
+
+    ↓
+
+LogisticRegression
+
+    ↓
+
+Prediction
+```
+
+Incorrect deployment:
+
+```
+Raw features
+
+    ↓
+
+LogisticRegression
+
+    ↓
+
+Prediction
+```
+
+In this experiment, the StandardScaler component was intentionally removed and only the classifier was saved.
+
+Model:
+
+```
+models/logistic_regression_only_v1.joblib
+```
+
+# 7. Module 3 Completion Status
 
 
 | Requirement | Status |
