@@ -1,4 +1,4 @@
-# breast-cancer-mlops\src\mlflow_train.py
+# breast-cancer-mlops/src/mlflow_train.py
 # Train Logistic Regression with MLflow Tracking.
 
 import mlflow
@@ -15,46 +15,128 @@ from pipeline import build_pipeline
 
 
 def train_with_mlflow(c):
+    # Connect to MLflow Tracking Server
+    mlflow.set_tracking_uri(
+        "http://127.0.0.1:5000"
+    )
+    # Create / select experiment
+    mlflow.set_experiment(
+        "Breast Cancer Classification"
+    )
+    # Enable sklearn autologging
+    mlflow.autolog(
+        log_models=False
+    )
+    # Create MLflow Run
+    with mlflow.start_run(
+        run_name=f"LogisticRegression_C_{c}"
+    ):
 
-    # Enable automatic logging
-    mlflow.set_tracking_uri("http://127.0.0.1:5000")
-    mlflow.set_experiment("Breast Cancer Classification")
-    mlflow.autolog()
-
-    # Start an MLflow run
-    with mlflow.start_run(run_name=f"LogisticRegression_C_{c}"):
-
-        # Load dataset
+        # =========================
+        # 1. Load data
+        # =========================
         X_train, X_test, y_train, y_test = load_data()
 
-        # Log hyperparameter
-        mlflow.log_param("C", c)
+        # =========================
+        # 2. Log parameters
+        # =========================
+        mlflow.log_param(
+            "model",
+            "LogisticRegression"
+        )
+        mlflow.log_param(
+            "C",
+            c
+        )
 
-        # Build pipeline
-        pipeline = build_pipeline(c=c)
+        # =========================
+        # 3. Build Pipeline
+        # =========================
+        pipeline = build_pipeline(
+            c=c
+        )
 
-        # Train model
-        pipeline.fit(X_train, y_train)
+        # =========================
+        # 4. Train
+        # =========================
+        pipeline.fit(
+            X_train,
+            y_train
+        )
 
-        # Prediction
-        y_pred = pipeline.predict(X_test)
-        y_prob = pipeline.predict_proba(X_test)[:, 1]
+        # =========================
+        # 5. Prediction
+        # =========================
+        y_pred = pipeline.predict(
+            X_test
+        )
+        y_prob = pipeline.predict_proba(
+            X_test
+        )[:, 1]
 
-        # Metrics
-        accuracy = accuracy_score(y_test, y_pred)
-        f1 = f1_score(y_test, y_pred)
-        roc_auc = roc_auc_score(y_test, y_prob)
+        # =========================
+        # 6. Metrics
+        # =========================
+        accuracy = accuracy_score(
+            y_test,
+            y_pred
+        )
+        f1 = f1_score(
+            y_test,
+            y_pred
+        )
+        roc_auc = roc_auc_score(
+            y_test,
+            y_prob
+        )
+        # Log metrics to MLflow
+        mlflow.log_metric(
+            "accuracy",
+            accuracy
+        )
+        mlflow.log_metric(
+            "f1_score",
+            f1
+        )
+        mlflow.log_metric(
+            "roc_auc",
+            roc_auc
+        )
 
-        print(f"Accuracy : {accuracy:.4f}")
-        print(f"F1-score : {f1:.4f}")
-        print(f"ROC-AUC  : {roc_auc:.4f}")
+        # =========================
+        # 7. Log model artifact
+        # =========================
+        mlflow.sklearn.log_model(
+            sk_model=pipeline,
+            name="model"
+        )
 
+        # Print result
+        print(
+            f"C={c}"
+        )
+        print(
+            f"Accuracy : {accuracy:.4f}"
+        )
+        print(
+            f"F1-score : {f1:.4f}"
+        )
+        print(
+            f"ROC-AUC  : {roc_auc:.4f}"
+        )
 
 if __name__ == "__main__":
-    for c in [0.1, 1.0, 10.0]:
 
-        print("=" * 50)
-        print(f"Training LogisticRegression(C={c})")
-        print("=" * 50)
+    configs = [
+        0.1,
+        1.0,
+        10.0
+    ]
 
+    for c in configs:
+        print("=" * 50)
+        print(
+            f"Training LogisticRegression(C={c})"
+        )
+        print("=" * 50)
         train_with_mlflow(c)
