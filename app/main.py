@@ -1,16 +1,23 @@
 # breast-cancer-mlops/app/main.py
-# FastAPI inference service
-
+# FastAPI inference service with prediction logging
 from fastapi import FastAPI
 from pydantic import BaseModel
+
 import joblib
 import numpy as np
+
+from src.prediction_logger import save_prediction_log
 
 MODEL_PATH = (
     "models/breast_cancer_pipeline_v1.joblib"
 )
+MODEL_VERSION = (
+    "breast_cancer_pipeline_v1"
+)
 
+# ==================================
 # Load model once when API starts
+# ==================================
 model = joblib.load(
     MODEL_PATH
 )
@@ -19,40 +26,40 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# ==========================
+# ==================================
 # Input schema
-# ==========================
+# ==================================
 class BreastCancerInput(BaseModel):
 
     features: list[float]
 
-# ==========================
+# ==================================
 # Health check
-# ==========================
+# ==================================
 @app.get("/health")
 def health():
-
     return {
         "status": "ok"
     }
 
-# ==========================
+# ==================================
 # Model information
-# ==========================
+# ==================================
 @app.get("/model-info")
 def model_info():
     return {
-        "model": "breast_cancer_pipeline_v1",
+        "model": MODEL_VERSION,
 
-        "algorithm": 
+        "algorithm":
         "StandardScaler + LogisticRegression",
 
-        "version": "1.0"
+        "version":
+        "1.0"
     }
 
-# ==========================
+# ==================================
 # Prediction endpoint
-# ==========================
+# ==================================
 @app.post("/predict")
 def predict(
     data: BreastCancerInput
@@ -85,8 +92,27 @@ def predict(
         "benign"
     )
 
+    # ==================================
+    # Save prediction log
+    # ==================================
+    save_prediction_log(
+
+        features=data.features,
+
+        prediction=int(prediction),
+
+        confidence=confidence,
+
+        model_version=MODEL_VERSION
+    )
+
     return {
-        "prediction": int(prediction),
-        "label": label,
-        "confidence": confidence
+        "prediction":
+        int(prediction),
+
+        "label":
+        label,
+
+        "confidence":
+        confidence
     }
