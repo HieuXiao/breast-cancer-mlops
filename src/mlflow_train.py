@@ -17,6 +17,8 @@ from pipeline import build_pipeline
 def train_with_mlflow():
 
     # Enable automatic logging
+    mlflow.set_tracking_uri("http://127.0.0.1:5000")
+    mlflow.set_experiment("Breast Cancer Classification")
     mlflow.autolog()
 
     # Start an MLflow run
