@@ -2,7 +2,9 @@ import json
 from datetime import datetime
 import os
 
+
 LOG_FILE = "logs/predictions.jsonl"
+
 
 def save_prediction_log(
     features,
@@ -10,6 +12,7 @@ def save_prediction_log(
     confidence,
     model_version
 ):
+
     log_data = {
         "timestamp": datetime.utcnow().isoformat(),
         "features": features,
@@ -28,6 +31,7 @@ def save_prediction_log(
         "a",
         encoding="utf-8"
     ) as f:
+
         f.write(
             json.dumps(log_data)
             + "\n"

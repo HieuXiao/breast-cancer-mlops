@@ -103,10 +103,58 @@ Reason:
 
 ---
 
-## 4. Conclusion
+## 4. Prediction Logging Integration
+
+Prediction logging was integrated into FastAPI `/predict` endpoint.
+
+
+Logged information:
+
+- timestamp
+- input features
+- prediction result
+- confidence score
+- model version
+
+
+Log file:
+```
+logs/predictions.jsonl
+```
+
+
+
+Example prediction logs:
+
+
+```json
+{
+ "timestamp": "2026-07-19T13:26:44.454566",
+ "prediction": 0,
+ "confidence": 0.9999999939,
+ "model_version": "breast_cancer_pipeline_v1"
+}
+
+{
+ "timestamp": "2026-07-19T13:27:54.692022",
+ "prediction": 0,
+ "confidence": 0.9530784230,
+ "model_version": "breast_cancer_pipeline_v1"
+}
+
+{
+ "timestamp": "2026-07-19T13:28:02.002959",
+ "prediction": 0,
+ "confidence": 0.9560041458,
+ "model_version": "breast_cancer_pipeline_v1"
+}
+
+## 5. Conclusion
 
 PSI detects distribution changes between training and production data.
 
 KS-test confirms whether the observed difference is statistically significant.
 
-Monitoring data distribution helps detect potential model degradation before performance metrics are available.
+Prediction logging provides traceability for production inference requests.
+
+Monitoring input distribution and prediction behavior helps detect potential model degradation before ground-truth labels become available.
